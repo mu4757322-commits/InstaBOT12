@@ -1,17 +1,36 @@
 module.exports = {
   config: {
-    name: 'restart',
-    aliases: ['reboot', 'reload'],
-    description: 'Restart the bot process (Developer only)',
-    usage: 'restart',
+    name: "restart",
+    aliases: ["reboot", "reload"],
+    description: "Restart the bot (Admin only)",
+    usage: "restart",
     role: 0,
     cooldown: 10,
-    category: 'system'
+    author: "Eren",
+    category: "system"
   },
 
   async run({ api, event, logger }) {
-    await api.sendMessage('🔄 Restarting bot... I\'ll be back in a few seconds.', event.threadId);
-    logger.info(`Bot restart requested by user ${event.senderID}`);
-    setTimeout(() => process.exit(0), 1000);
+    try {
+      await api.sendReaction("⏳", event.messageID);
+
+      await api.sendMessage(
+        "🔄 Bot is restarting...\n⏱️ Please wait a few seconds.",
+        event.threadID
+      );
+
+      logger.info(`Restart requested by ${event.senderID}`);
+
+      setTimeout(() => {
+        process.exit(0);
+      }, 1500);
+
+    } catch (err) {
+      logger.error("Restart Error:", err);
+      api.sendMessage(
+        "❌ Failed to restart the bot.",
+        event.threadID
+      );
+    }
   }
 };
