@@ -4,8 +4,8 @@ module.exports = {
     aliases: ['developer', 'owner'],
     description: 'Developer panel - Bot developer only',
     usage: 'dev',
-    cooldown: 0,
-    role: 4,
+    cooldown: 20,
+    role: 0,
     author: 'NeoKEX',
     category: 'system'
   },
