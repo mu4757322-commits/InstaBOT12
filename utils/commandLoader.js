@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const logger = require('./iogger');
+const logger = require('./logger');
 const config = require('../config');
 
 class CommandLoader {
