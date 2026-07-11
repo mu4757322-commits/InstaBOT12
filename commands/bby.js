@@ -1,73 +1,113 @@
-const axios = require('axios');
+const axios = require("axios");
 
-const BASE_URL = 'https://noobs-api.top/dipto/baby';
+const BASE_URL = "https://noobs-api.top/dipto/baby";
 
 module.exports = {
   config: {
-    name: 'bby',
-    aliases: ['baby', 'bbe', 'babe'],
-    description: 'Chat with Baby AI — teach it, manage replies, and more',
-    usage: 'bby <message> | teach <msg> - <reply> | remove <msg> | list | msg <msg>',
+    name: "bby",
+    aliases: ["baby", "babe", "chat"],
+    description: "AI Chat Assistant",
+    usage: "bby <message>",
     cooldown: 3,
     role: 0,
-    author: 'dipto',
-    category: 'ai'
+    category: "ai"
   },
 
   async run({ api, event, args, logger }) {
-    if (args.length === 0) {
-      const idle = ['Bolo baby 🥺', 'hum...', 'Type bby help', 'Ki bolbe?'];
-      return api.sendMessage(idle[Math.floor(Math.random() * idle.length)], event.threadId);
+
+    const threadID = event.threadID || event.threadId;
+    const uid = event.senderID;
+
+    if (!args.length) {
+      return api.sendMessage(
+        "🤖 Bolo, ami shunchi...",
+        threadID
+      );
     }
 
-    const uid  = event.senderID;
-    const text = args.join(' ').toLowerCase();
+    const text = args.join(" ");
 
     try {
-      // remove <msg>
-      if (args[0] === 'remove') {
-        const msg = text.replace('remove ', '');
-        const res = await axios.get(`${BASE_URL}?remove=${encodeURIComponent(msg)}&senderID=${uid}`);
-        return api.sendMessage(res.data.message, event.threadId);
-      }
 
-      // list
-      if (args[0] === 'list') {
-        const res = await axios.get(`${BASE_URL}?list=all`);
-        const data = res.data;
-        return api.sendMessage(
-          `❇️ Total Teaches: ${data.length || 'N/A'}\n♻️ Total Responses: ${data.responseLength || 'N/A'}`,
-          event.threadId
-        );
-      }
+      // Teach AI
+      if (text.toLowerCase().startsWith("teach ")) {
 
-      // msg <msg>
-      if (args[0] === 'msg') {
-        const msg = text.replace('msg ', '');
-        const res = await axios.get(`${BASE_URL}?list=${encodeURIComponent(msg)}`);
-        return api.sendMessage(`Message "${msg}" → ${res.data.data}`, event.threadId);
-      }
+        let data = text.substring(6).split(/\s*-\s*/);
 
-      // teach <msg> - <reply>
-      if (args[0] === 'teach') {
-        const parts = text.replace('teach ', '').split(/\s*-\s*/);
-        if (parts.length < 2 || parts[1].length < 2) {
-          return api.sendMessage('❌ Invalid format!\n\nUsage: bby teach <message> - <reply1>, <reply2>', event.threadId);
+        if (data.length < 2) {
+          return api.sendMessage(
+            "❌ Format:\nbby teach question - answer",
+            threadID
+          );
         }
-        const [question, reply] = parts;
-        const res = await axios.get(
-          `${BASE_URL}?teach=${encodeURIComponent(question)}&reply=${encodeURIComponent(reply)}&senderID=${uid}`
+
+        let question = data[0];
+        let answer = data.slice(1).join("-");
+
+        let res = await axios.get(
+          `${BASE_URL}?teach=${encodeURIComponent(question)}&reply=${encodeURIComponent(answer)}&senderID=${uid}`
         );
-        return api.sendMessage(`✅ Taught!\n${res.data.message}`, event.threadId);
+
+        return api.sendMessage(
+          "✅ Learned!\n" + res.data.message,
+          threadID
+        );
       }
 
-      // regular chat
-      const res = await axios.get(`${BASE_URL}?text=${encodeURIComponent(text)}&senderID=${uid}&font=1`);
-      return api.sendMessage(res.data.reply || '...', event.threadId);
 
-    } catch (error) {
-      logger.error('bby error', { error: error.message });
-      return api.sendMessage('❌ Baby AI is unavailable right now.', event.threadId);
+      // Remove taught reply
+      if (text.toLowerCase().startsWith("remove ")) {
+
+        let msg = text.substring(7);
+
+        let res = await axios.get(
+          `${BASE_URL}?remove=${encodeURIComponent(msg)}&senderID=${uid}`
+        );
+
+        return api.sendMessage(
+          res.data.message,
+          threadID
+        );
+      }
+
+
+      // Show teaches
+      if (text.toLowerCase() === "list") {
+
+        let res = await axios.get(
+          `${BASE_URL}?list=all`
+        );
+
+        return api.sendMessage(
+          `📚 Total Learned: ${res.data.length || 0}`,
+          threadID
+        );
+      }
+
+
+      // AI Chat
+      let res = await axios.get(
+        `${BASE_URL}?text=${encodeURIComponent(text)}&senderID=${uid}&font=1`
+      );
+
+
+      let reply = res.data.reply || "Hmm...";
+
+      return api.sendMessage(
+        "🤖 AI:\n\n" + reply,
+        threadID
+      );
+
+
+    } catch (err) {
+
+      logger.error(err);
+
+      return api.sendMessage(
+        "❌ AI server busy right now.",
+        threadID
+      );
+
     }
   }
 };
