@@ -4,7 +4,7 @@ module.exports = {
   config: {
     name: "funny",
     aliases: ["funny", "fun"],
-    description: "Send random funny pictures",
+    description: "Send funny meme",
     usage: "funny",
     cooldown: 5,
     role: 0,
@@ -19,21 +19,22 @@ module.exports = {
         "https://meme-api.com/gimme"
       );
 
-      const image = res.data.url;
-      const title = res.data.title;
+      if (!res.data || !res.data.url) {
+        throw new Error("No image found");
+      }
 
       api.sendMessage(
         {
-          body: `😂 ${title}`,
-          attachment: await global.utils.getStreamFromURL(image)
+          body: `😂 ${res.data.title}`,
+          attachment: await global.utils.getStreamFromURL(res.data.url)
         },
         event.threadID
       );
 
-    } catch (err) {
+    } catch (e) {
 
       api.sendMessage(
-        "❌ Funny meme পাওয়া যায়নি 😅",
+        "❌ Meme server busy, আবার try করো 😅",
         event.threadID
       );
 
