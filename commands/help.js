@@ -3,7 +3,7 @@ module.exports = {
     name: 'help',
     aliases: ['menu', 'commands', 'h'],
     version: '4.8',
-    author: 'NeoKEX',
+    author: 'Eren',
     description: 'Show all available commands or detailed info about one command',
     usage: 'help [command name]',
     cooldown: 3,
@@ -43,7 +43,7 @@ module.exports = {
           .toLowerCase();
       };
 
-      // ── Single command detail ──────────────────────────────────────────
+      // Single command detail
       if (args.length > 0) {
         const query = args[0].toLowerCase();
         const cmd = commandLoader.getCommand(query);
@@ -65,7 +65,7 @@ module.exports = {
           ? usage.replace(/\{pn\}/g, prefix)
           : `${prefix}${name}`;
 
-        let info = `☠️ 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗜𝗡𝗙𝗢 ☠️\n\n`;
+        let info = `☠️ 𝗘𝗥𝗘𝗡 𝗖𝗢𝗠𝗠𝗔𝗡𝗗 𝗜𝗡𝗙𝗢 ☠️\n\n`;
         info += `➥ Name: ${name}\n`;
         info += `➥ Version: ${version || '1.0'}\n`;
         info += `➥ Category: ${category || 'Uncategorized'}\n`;
@@ -74,30 +74,38 @@ module.exports = {
         info += `➥ Usage: ${usageStr}\n`;
         info += `➥ Cooldown: ${cooldown || 0}s\n`;
         info += `➥ Permission: ${role ?? 0} — ${roleName}\n`;
-        info += `➥ Author: ${author || 'Unknown'}`;
+        info += `➥ Author: ${author || 'Eren'}`;
 
         return api.sendMessage(info, event.threadId);
       }
 
-      // ── Full command list ──────────────────────────────────────────────
+      // Full command list
       const categories = {};
       let totalUnique = 0;
 
       for (const [key, cmd] of allCommands) {
-        if (cmd.config.name !== key) continue; // skip alias entries
+        if (cmd.config.name !== key) continue;
+
         const cat = cleanCategory(cmd.config.category);
+
         if (!categories[cat]) categories[cat] = [];
+
         categories[cat].push(cmd.config.name);
         totalUnique++;
       }
 
-      let msg = `━━━☠️ ${config.NICK_NAME_BOT || 'NeoKEX AI'} ☠️━━━\n`;
+      let msg = `___ ${config.NICK_NAME_BOT || 'Eren AI'} ____\n`;
       msg += `│ Prefix: ${prefix}  │  Commands: ${totalUnique}\n`;
 
       const sortedCats = Object.keys(categories).sort();
+
       for (const cat of sortedCats) {
         const emoji = emojiMap[cat] || '➥';
-        const cmds  = categories[cat].sort().map(c => `× ${c}`).join('  ');
+        const cmds = categories[cat]
+          .sort()
+          .map(c => `× ${c}`)
+          .join('  ');
+
         msg += `\n╭──『 ${emoji} ${cat.toUpperCase()} 』\n`;
         msg += `${cmds}\n`;
         msg += `╰────────────◊\n`;
@@ -109,7 +117,10 @@ module.exports = {
 
     } catch (error) {
       logger.error('Error in help command', { error: error.message });
-      return api.sendMessage('❌ Error displaying help information.', event.threadId);
+      return api.sendMessage(
+        '❌ Error displaying help information.',
+        event.threadId
+      );
     }
   }
 };
