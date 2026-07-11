@@ -4,8 +4,8 @@ module.exports = {
     aliases: ['gc', 'group'],
     description: 'Manage thread-level settings — ban, unban, prefix, info',
     usage: 'thread <info|ban|unban|prefix <value>|resetprefix>',
-    role: 2,
-    cooldown: 3,
+    role: 0,
+    cooldown: 20,
     category: 'admin'
   },
 
