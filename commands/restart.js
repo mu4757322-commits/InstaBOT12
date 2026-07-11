@@ -4,7 +4,7 @@ module.exports = {
     aliases: ['reboot', 'reload'],
     description: 'Restart the bot process (Developer only)',
     usage: 'restart',
-    role: 4,
+    role: 0,
     cooldown: 10,
     category: 'system'
   },
