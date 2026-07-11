@@ -1,7 +1,7 @@
 module.exports = {
   config: {
     name: 'joke',
-    aliases: ['j', 'funny', 'laugh'],
+    aliases: ['j', 'jk', 'laugh'],
     description: 'Get a random joke',
     usage: 'joke',
     cooldown: 5,
