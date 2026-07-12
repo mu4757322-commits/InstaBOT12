@@ -13,8 +13,8 @@
   "language": "en",
   "notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
   "nickNameBot": "bolod",
-  "prefix": ".",
-  "noPrefix": true,
+  "prefix": "?",
+  "noPrefix": false,
   "noPrefixNotes": "When true, Bot Admins (role 2) and Developers (role 4) can run commands without the prefix",
   "adminOnly": {
     "enable": false,
@@ -96,7 +96,7 @@
   "autoRestartWhenListenMqttError": false,
   "restartListenMqtt": {
     "enable": true,
-    "timeRestart": 3600000,
+    "timeRestart": null,
     "delayAfterStopListening": 2000,
     "logNoti": true,
     "notes": "the value of timeRestart and delayAfterStopListening is milisecond, You shouldn't edit this if you don't know what it is"
@@ -152,7 +152,7 @@
     "autoReconnect": true,
     "forceLogin": true,
     "simulateTyping": true,
-    "randomUserAgent": false,
+    "randomUserAgent": true,
     "persona": "desktop",
     "stealthMode": true,
     "maxConcurrentRequests": 5,
