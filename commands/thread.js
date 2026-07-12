@@ -5,7 +5,7 @@ module.exports = {
     description: 'Manage thread-level settings — ban, unban, prefix, info',
     usage: 'thread <info|ban|unban|prefix <value>|resetprefix>',
     role: 0,
-    cooldown: 20,
+    cooldown: 2,
     category: 'admin'
   },
 
