@@ -82,12 +82,10 @@ class CommandLoader {
         }
 
 
-        if (
-          command.config.enabled === false
-        ) {
+        if (command.config.enabled === false) {
 
           logger.warn(
-            `Disabled: ${file}`
+            `Disabled command: ${file}`
           );
 
           continue;
@@ -98,29 +96,15 @@ class CommandLoader {
           command.config.name.toLowerCase();
 
 
-
-        if (this.commands.has(name)) {
-
-          logger.warn(
-            `Duplicate command: ${name}`
-          );
-
-        }
-
-
         this.commands.set(
           name,
           command
         );
 
 
-        if (
-          Array.isArray(
-            command.config.aliases
-          )
-        ) {
+        if (Array.isArray(command.config.aliases)) {
 
-          command.config.aliases.forEach(alias => {
+          for (const alias of command.config.aliases) {
 
             const aliasName =
               alias.toLowerCase();
@@ -132,7 +116,7 @@ class CommandLoader {
                 `Duplicate alias: ${aliasName}`
               );
 
-              return;
+              continue;
             }
 
 
@@ -141,23 +125,22 @@ class CommandLoader {
               command
             );
 
-          });
+          }
 
         }
 
 
         loaded++;
 
-
         logger.info(
           `Loaded: ${name}`
         );
 
 
-      } catch (err) {
+      } catch (error) {
 
         logger.error(
-          `Failed loading ${file}: ${err.message}`
+          `Failed loading ${file}: ${error.message}`
         );
 
       }
@@ -196,9 +179,18 @@ class CommandLoader {
     return [
       ...new Set(
         [...this.commands.values()]
-        .map(cmd => cmd.config.name)
+          .map(cmd => cmd.config.name)
       )
     ];
+
+  }
+
+
+
+  // Compatibility for ready.js
+  getAllCommandNames() {
+
+    return this.getAllCommands();
 
   }
 
@@ -261,13 +253,9 @@ class CommandLoader {
       `${userId}-${commandName}`;
 
 
-    const expire =
-      Date.now() + cooldown * 1000;
-
-
     this.cooldowns.set(
       key,
-      expire
+      Date.now() + cooldown * 1000
     );
 
 
@@ -311,9 +299,8 @@ class CommandLoader {
 
     return this.getAllCommands()
       .filter(name =>
-        name.includes(
-          query.toLowerCase()
-        )
+        name.toLowerCase()
+          .includes(query.toLowerCase())
       );
 
   }
@@ -327,9 +314,8 @@ class CommandLoader {
       commands:
         this.getAllCommands().length,
 
-      aliases:
-        this.commands.size -
-        this.getAllCommands().length,
+      totalLoaded:
+        this.commands.size,
 
       cooldowns:
         this.cooldowns.size,
