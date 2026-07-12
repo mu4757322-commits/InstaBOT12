@@ -4,8 +4,8 @@ module.exports = {
     aliases: ['wl'],
     description: 'Manage the user and thread whitelist (Bot Admin only)',
     usage: 'whitelist <on|off|add|remove|list> [user|thread] [id]',
-    role: 0,
-    cooldown: 20,
+    role: 2,
+    cooldown: 2,
     category: 'admin'
   },
 
