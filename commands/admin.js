@@ -4,8 +4,8 @@ module.exports = {
     aliases: ['botadmin', 'admins'],
     description: 'Admin panel - Manage bot administrators',
     usage: 'admin [add|remove|list] [user_id]',
-    cooldown: 20,
-    role: 0,
+    cooldown: 2,
+    role: 2,
     author: 'NeoKEX',
     category: 'admin'
   },
