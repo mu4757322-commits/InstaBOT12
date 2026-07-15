@@ -1,113 +1,125 @@
 const axios = require("axios");
 
-module.exports = {
-  config: {
+module.exports.config = {
     name: "pair",
-    aliases: ["couple", "love"],
-    description: "Random couple with profile pictures",
-    usage: "pair",
-    cooldown: 10,
-    role: 0,
-    author: "Eren",
-    category: "fun"
-  },
+    version: "1.0.0",
+    hasPermission: 0,
+    credits: "Eren",
+    description: "Random couple match with profile pictures",
+    commandCategory: "fun",
+    usages: "pair",
+    cooldowns: 10,
+    aliases: ["couple", "love"]
+};
 
-  async run({ api, event }) {
+module.exports.run = async function({ api, event }) {
     try {
 
-      const senderID = event.senderID;
-
-      const threadInfo =
-        await api.getThreadInfo(event.threadID);
-
-      const members =
-        threadInfo.participantIDs.filter(
-          id => id != senderID
-        );
+        const threadID = event.threadID;
+        const senderID = event.senderID;
 
 
-      if (!members.length) {
-        return api.sendMessage(
-          "❌ No partner found.",
-          event.threadID
-        );
-      }
+        const threadInfo = await api.getThread(threadID);
+
+        const members =
+            threadInfo.participantIDs?.filter(
+                id => String(id) !== String(senderID)
+            ) || [];
 
 
-      const partnerID =
-        members[
-          Math.floor(Math.random() * members.length)
-        ];
+        if (!members.length) {
+            return api.sendMessage(
+                "❌ No partner found.",
+                threadID
+            );
+        }
 
 
-      const userInfo =
-        await api.getUserInfo(senderID);
-
-      const partnerInfo =
-        await api.getUserInfo(partnerID);
+        const partnerID =
+            members[Math.floor(Math.random() * members.length)];
 
 
-      const name1 =
-        userInfo[senderID]?.name || "User";
+        const senderInfo =
+            await api.getUserInfo(senderID);
 
-      const name2 =
-        partnerInfo[partnerID]?.name || "User";
-
-
-      const love =
-        Math.floor(Math.random() * 51) + 50;
+        const partnerInfo =
+            await api.getUserInfo(partnerID);
 
 
-      let status =
-        love >= 90 ? "💖 Soulmate Couple" :
-        love >= 75 ? "💕 Cute Couple" :
-        love >= 60 ? "❤️ Good Match" :
-        "😂 Just Friends";
+
+        const name1 =
+            senderInfo[senderID]?.name || "User";
+
+        const name2 =
+            partnerInfo[partnerID]?.name || "User";
 
 
-      const img1 =
-        `https://graph.facebook.com/${senderID}/picture?width=720&height=720`;
 
-      const img2 =
-        `https://graph.facebook.com/${partnerID}/picture?width=720&height=720`;
+        const love =
+            Math.floor(Math.random() * 51) + 50;
 
 
-      const message =
+
+        let status;
+
+        if (love >= 90)
+            status = "💖 Soulmate Couple";
+        else if (love >= 75)
+            status = "💕 Cute Couple";
+        else if (love >= 60)
+            status = "❤️ Good Match";
+        else
+            status = "😂 Just Friends";
+
+
+
+        const dp1 =
+            `https://graph.facebook.com/${senderID}/picture?width=720&height=720`;
+
+        const dp2 =
+            `https://graph.facebook.com/${partnerID}/picture?width=720&height=720`;
+
+
+
+        const caption =
 `💞 RANDOM COUPLE MATCH 💞
 
 👤 ${name1}
-❤️
+      ❤️
 👤 ${name2}
 
-💕 Love: ${love}%
+💕 Love Percentage: ${love}%
 
-✨ ${status}
+✨ Result: ${status}
 
 🌸 Anime Couple Mode`;
 
 
-      // Send text + two DP links
-      return api.sendMessage(
-        {
-          body: message,
-          attachment: [
-            await global.utils.getStreamFromURL(img1),
-            await global.utils.getStreamFromURL(img2)
-          ]
-        },
-        event.threadID
-      );
+
+        // Send first DP
+        await api.sendPhotoFromUrl(
+            threadID,
+            dp1,
+            {
+                caption: caption
+            }
+        );
 
 
-    } catch (err) {
+        // Send second DP
+        await api.sendPhotoFromUrl(
+            threadID,
+            dp2
+        );
 
-      console.log("Pair Error:", err);
 
-      return api.sendMessage(
-        "❌ Pair command failed.",
-        event.threadID
-      );
+    } catch (error) {
 
+        console.error("PAIR ERROR:", error);
+
+        return api.sendMessage(
+            "❌ Pair command failed.\n\n" + error.message,
+            event.threadID
+        );
     }
-  }
 };
